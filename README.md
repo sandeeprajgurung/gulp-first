@@ -18,4 +18,39 @@ To watch:
 FOR BROWSER SYNC live reload
 required to run $ npm i browser-sync
 
-see Readme file for more details
+example for browser-sync:
+
+const gulp = require('gulp');
+const sass = require('gulp-sass');
+const uglifycss = require('gulp-uglifycss');
+const browserSync = require('browser-sync').create();
+ 
+gulp.task('sass', function () {
+  return gulp.src('./sass/*.sass')
+    .pipe(sass().on('error', sass.logError))
+    .pipe(gulp.dest('./css'))
+    .pipe(browserSync.stream());
+});
+
+gulp.task('css', function () {
+    return gulp.src('./css/*.css')
+      .pipe(sass().on('error', sass.logError))
+      .pipe(uglifycss({
+            "uglyComments": true
+        }))
+      .pipe(gulp.dest('./dist'))
+      .pipe(browserSync.stream());
+  });
+
+
+function watch(){
+    browserSync.init({
+        server: {
+            baseDir: './'
+        }
+    });
+    gulp.watch('./sass/*.sass', gulp.series('sass'));
+    gulp.watch('./css/*.css', gulp.series('css'));
+}
+
+exports.watch = watch;
